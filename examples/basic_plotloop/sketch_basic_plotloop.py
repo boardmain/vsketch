@@ -8,10 +8,10 @@ class BasicPlotloopSketch(vsketch.SketchClass):
     frame = vsketch.Param(0)
 
     def draw(self, vsk: vsketch.Vsketch) -> None:
-        vsk.size("5x5cm", center=False)
+        vsk.size("70x50cm", center=True)
         vsk.scale("cm")
 
-        radius = 2
+        radius = 22
         vsk.circle(2.5, 2.5, radius=radius)
         angle = 360 / self.frame_count * self.frame
         vsk.circle(

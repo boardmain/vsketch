@@ -182,3 +182,10 @@ Part of this project's documentation is inspired by or copied from the  [Process
 This project is licensed under the MIT license. The documentation is licensed under the
 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) license. See the
 [documentation](https://vsketch.readthedocs.io/en/latest/license.html) for details.
+
+
+
+
+ESEGUI CON
+
+poetry run vsk run examples/quick_draw
