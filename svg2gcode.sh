@@ -64,15 +64,14 @@ segment = """G1 X{x:.3f} Y{y:.3f}\\n"""
 line_end = """G0 Z{vp_penup} ; pen up\\n\\n"""
 
 document_end = """G0 Z{vp_penup} ;
-G00 X0 Y0;
 """
 EOF
 
+ # linemerge --tolerance 0.1mm \
+ # linesimplify --tolerance 0.05mm \
+  #linesort \
 vpype -c "$TMP_CFG" \
   read "$INPUT" \
-  linemerge --tolerance 0.1mm \
-  linesimplify --tolerance 0.05mm \
-  linesort \
   layout --fit-to-margins ${MARGIN}mm --align center --valign center ${WIDTH}mmx${HEIGHT}mm \
   gwrite -p default \
   "$OUTPUT"

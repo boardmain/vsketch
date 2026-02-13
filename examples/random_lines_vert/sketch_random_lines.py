@@ -13,6 +13,7 @@ class RandomLinesSketch(vsketch.SketchClass):
     
     # Line configuration
     show_lines = vsketch.Param(True)
+    replicate_first_line = vsketch.Param(False)
     num_line = vsketch.Param(200, 1)
     line_spacing_mm = vsketch.Param(1.8, 0.1, decimals=2)
     y_amplitude_mm = vsketch.Param(5.0, 0.0, decimals=2)
@@ -53,13 +54,22 @@ class RandomLinesSketch(vsketch.SketchClass):
 
         # Draw lines first (clipped to canvas) if enabled
         if self.show_lines:
-            for i in range(self.num_line):
-                # Apply y_amplitude_mm to control the wave amplitude
-                y_coords = perlin[:, i] * self.y_amplitude_mm + self.line_spacing_mm * i
+            if self.replicate_first_line:
+                # Generate only the first line pattern and replicate it
+                first_line_y = perlin[:, 0] * self.y_amplitude_mm
                 
-                # Clip y coordinates to canvas bounds
-                y_coords = np.clip(y_coords, 0, height)
-                
+                for i in range(self.num_line):
+                    # Use the same pattern, just shifted vertically
+                    y_coords = first_line_y + self.line_spacing_mm * i
+                    y_coords = np.clip(y_coords, 0, height)
+                    vsk.polygon(x_coords, y_coords)
+            else:
+                # Normal behavior: each line has its own noise pattern
+                for i in range(self.num_line):
+                    y_coords = perlin[:, i] * self.y_amplitude_mm + self.line_spacing_mm * i
+                    y_coords = np.clip(y_coords, 0, height)
+                    vsk.polygon(x_coords, y_coords)
+                    
                 vsk.polygon(x_coords, y_coords)
         
         # Draw red points on lines if enabled
@@ -80,7 +90,11 @@ class RandomLinesSketch(vsketch.SketchClass):
             
             for i in range(self.num_line):
                 # Interpolate y coordinates for the point positions
-                y_line = perlin[:, i] * self.y_amplitude_mm + self.line_spacing_mm * i
+                if self.replicate_first_line:
+                    # Use first line pattern for all points
+                    y_line = perlin[:, 0] * self.y_amplitude_mm + self.line_spacing_mm * i
+                else:
+                    y_line = perlin[:, i] * self.y_amplitude_mm + self.line_spacing_mm * i
                 
                 # Clip y coordinates to canvas bounds
                 y_line = np.clip(y_line, 0, height)
@@ -107,14 +121,36 @@ class RandomLinesSketch(vsketch.SketchClass):
             
             for i in range(self.num_line):
                 # Interpolate y coordinates for the point positions
-                y_line = perlin[:, i] * self.y_amplitude_mm + self.line_spacing_mm * i
+                if self.replicate_first_line:
+                    # Use first line pattern for all vertical lines
+                    y_line = perlin[:, 0] * self.y_amplitude_mm + self.line_spacing_mm * i
+                else:
+                    y_line = perlin[:, i] * self.y_amplitude_mm + self.line_spacing_mm * i
                 y_line = np.clip(y_line, 0, height)
                 y_points = np.interp(point_x_positions, x_coords, y_line)
                 
+                # Calculate next row's points if it exists
+                y_next_points = None
+                if i < self.num_line - 1:
+                    if self.replicate_first_line:
+                        y_line_next = perlin[:, 0] * self.y_amplitude_mm + self.line_spacing_mm * (i + 1)
+                    else:
+                        y_line_next = perlin[:, i + 1] * self.y_amplitude_mm + self.line_spacing_mm * (i + 1)
+                    y_line_next = np.clip(y_line_next, 0, height)
+                    y_next_points = np.interp(point_x_positions, x_coords, y_line_next)
+                
                 # Draw vertical lines from each point downward
-                for x, y in zip(point_x_positions, y_points):
+                for j, (x, y) in enumerate(zip(point_x_positions, y_points)):
                     y_end = min(y + self.vertical_line_length_mm, height)
-                    vsk.line(x, y, x, y_end)
+                    
+                    # Limit y_end to stay at least 0.5mm before next row's point
+                    if y_next_points is not None:
+                        max_y_end = y_next_points[j] - 0.5
+                        y_end = min(y_end, max_y_end)
+                    
+                    # Only draw if there's meaningful length
+                    if y_end > y + 0.1:
+                        vsk.line(x, y, x, y_end)
 
     def finalize(self, vsk: vsketch.Vsketch) -> None:
         vsk.vpype("linemerge linesimplify reloop linesort")
@@ -164,14 +200,26 @@ class RandomLinesSketch(vsketch.SketchClass):
             # Create command that finds the latest SVG automatically
             latest_svg_cmd = f'$(ls -t {rel_output_dir}/*.svg | head -1)'
             
+            # Path to gcode_sort.py
+            gcode_sort_script = svg2gcode_script.parent / "gcode_sort.py"
+            
+            # Command to find the latest GCODE file
+            latest_gcode_cmd = f'$(ls -t {rel_output_dir}/*.gcode | head -1)'
+            
             print(f"\n{'='*70}")
-            print(f"G-CODE GENERATION COMMAND:")
+            print(f"G-CODE GENERATION COMMANDS:")
             print(f"{'='*70}")
-            print(f"\ncd {svg2gcode_script.parent}")
-            print(f'./svg2gcode.sh {latest_svg_cmd} {self.gcode_penup} {self.gcode_pendown} {self.gcode_speed} {width} {height} {self.gcode_margin}')
-            print(f"\n💡 This command automatically uses the most recent SVG in the output folder")
-            print(f"\nOr specify a file manually:")
+            print(f"\n1. Generate G-code from SVG:")
+            print(f"   cd {svg2gcode_script.parent}")
+            print(f'   ./svg2gcode.sh {latest_svg_cmd} {self.gcode_penup} {self.gcode_pendown} {self.gcode_speed} {width} {height} {self.gcode_margin}')
+            print(f"\n2. Sort paths for optimized plotting (uses most recent G-code):")
+            print(f"   cd {svg2gcode_script.parent}")
+            print(f'   python3 gcode_sort.py {latest_gcode_cmd} y')
+            print(f"\n💡 Step 1 automatically uses the most recent SVG in the output folder")
+            print(f"💡 Step 2 automatically uses the most recent G-code and creates a _sorted.gcode file")
+            print(f"\nOr specify files manually:")
             print(f"./svg2gcode.sh {svg_path} {self.gcode_penup} {self.gcode_pendown} {self.gcode_speed} {width} {height} {self.gcode_margin}")
+            print(f'python3 gcode_sort.py {rel_output_dir}/<filename>.gcode y')
             print(f"{'='*70}\n")
 
 
