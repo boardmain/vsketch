@@ -1,38 +1,36 @@
-# *vsketch*
+# _vsketch_
 
 ![python](https://img.shields.io/github/languages/top/abey79/vsketch)
 ![Test](https://img.shields.io/github/actions/workflow/status/abey79/vsketch/python-lint-tests.yml?logo=github)
 [![Documentation Status](https://img.shields.io/readthedocs/vsketch?label=Read%20the%20Docs&logo=read-the-docs)](https://vsketch.readthedocs.io/en/latest/?badge=latest)
 
-
 ## What is _vsketch_?
 
 _vsketch_ is a Python generative art toolkit for plotters with the following focuses:
 
-* **Accessibility**: _vsketch_ is easy to learn and feels familiar thanks to its API strongly inspired from [Processing](https://processing.org).
-* **Minimized friction**: _vsketch_ automates every part of the creation process
-      (project initialisation, friction-less iteration, export to plotter-ready files) through a CLI tool called `vsk`
-      and a tight integration with [_vpype_](https://github.com/abey79/vpype/).
-* **Plotter-centric**: _vsketch_ is made for plotter users, by plotter users. It's feature set is focused on the
-      peculiarities of this medium and doesn't aim to solve other problems.
-* **Interoperability**: _vsketch_ plays nice with popular packages such as [Numpy](https://numpy.org) and
-      [Shapely](https://shapely.readthedocs.io/en/latest/), which are true enabler for plotter generative art.
+- **Accessibility**: _vsketch_ is easy to learn and feels familiar thanks to its API strongly inspired from [Processing](https://processing.org).
+- **Minimized friction**: _vsketch_ automates every part of the creation process
+  (project initialisation, friction-less iteration, export to plotter-ready files) through a CLI tool called `vsk`
+  and a tight integration with [_vpype_](https://github.com/abey79/vpype/).
+- **Plotter-centric**: _vsketch_ is made for plotter users, by plotter users. It's feature set is focused on the
+  peculiarities of this medium and doesn't aim to solve other problems.
+- **Interoperability**: _vsketch_ plays nice with popular packages such as [Numpy](https://numpy.org) and
+  [Shapely](https://shapely.readthedocs.io/en/latest/), which are true enabler for plotter generative art.
 
 _vsketch_ is the sum of two things:
 
-* A CLI tool named `vsk` to automate every part of a sketch project lifecycle::
-    * Sketch creation based on a customizable template.
-    * Interactive rendering of your sketch with live-reload and custom parameters.
-    * Batch export to SVG with random seed and configuration management as well as multiprocessing support.
-* An easy-to-learn API similar to [Processing](https://processing.org) to implement your sketches.
+- A CLI tool named `vsk` to automate every part of a sketch project lifecycle::
+  - Sketch creation based on a customizable template.
+  - Interactive rendering of your sketch with live-reload and custom parameters.
+  - Batch export to SVG with random seed and configuration management as well as multiprocessing support.
+- An easy-to-learn API similar to [Processing](https://processing.org) to implement your sketches.
 
-*This project is at an early the stage and needs [contributions](https://vsketch.readthedocs.io/en/latest/contributing.html).
-You can help by providing feedback and improving the documentation.*
+_This project is at an early the stage and needs [contributions](https://vsketch.readthedocs.io/en/latest/contributing.html).
+You can help by providing feedback and improving the documentation._
 
+## Installing _vsketch_
 
-## Installing *vsketch*
-
-The recommended way to install *vsketch* is as a stand-alone installation using pipx:
+The recommended way to install _vsketch_ is as a stand-alone installation using pipx:
 
 ```bash
 $ pipx install vsketch
@@ -45,7 +43,6 @@ $ vsk run path/to/vsketch-master/examples/schotter
 ```
 
 Check the [installation instructions](https://vsketch.readthedocs.io/en/latest/install.html) for more details.
-
 
 ## Getting started
 
@@ -122,7 +119,7 @@ class SchotterSketch(vsketch.SketchClass):
     columns = vsketch.Param(12)
     rows = vsketch.Param(22)
     fuzziness = vsketch.Param(1.0)
-    
+
     # ...
 ```
 
@@ -168,14 +165,13 @@ You'll find all the SVG file in the project's `output` subdirectory:
 <img width="600" alt="image" src="https://user-images.githubusercontent.com/49431240/107375111-abab0180-6ae8-11eb-8034-d84c9d400ab2.png">
 
 Next steps:
-* Use `vsk` integrated help to learn about the all the possibilities (`vsk --help`).
-* Learn the vsketch API on the documentation's [overview](https://vsketch.readthedocs.io/en/latest/overview.html) and [reference](https://vsketch.readthedocs.io/en/latest/autoapi/vsketch/index.html) pages.
 
+- Use `vsk` integrated help to learn about the all the possibilities (`vsk --help`).
+- Learn the vsketch API on the documentation's [overview](https://vsketch.readthedocs.io/en/latest/overview.html) and [reference](https://vsketch.readthedocs.io/en/latest/autoapi/vsketch/index.html) pages.
 
 ## Acknowledgments
 
-Part of this project's documentation is inspired by or copied from the  [Processing project](https://processing.org).
-
+Part of this project's documentation is inspired by or copied from the [Processing project](https://processing.org).
 
 ## License
 
@@ -183,9 +179,9 @@ This project is licensed under the MIT license. The documentation is licensed un
 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) license. See the
 [documentation](https://vsketch.readthedocs.io/en/latest/license.html) for details.
 
-
-
+setup
+poetry run pip install -e .
 
 ESEGUI CON
 
-poetry run vsk run examples/quick_draw
+poetry run vsk run examples/random_lines_vert
